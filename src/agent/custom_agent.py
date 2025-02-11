@@ -195,7 +195,10 @@ class CustomAgent(Agent):
         )
 
         ai_message = self.llm.invoke(messages_to_process)
+        
+        logger.info(f"Delay   {int(os.getenv('LLM_API_DELAY', 20))}"  )
         time.sleep(int(os.getenv('LLM_API_DELAY', 20)))  # Add rate limiting delay
+        
         self.message_manager._add_message_with_tokens(ai_message)
 
         if self.use_deepseek_r1:
