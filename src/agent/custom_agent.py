@@ -2,6 +2,8 @@ import json
 import logging
 import pdb
 import traceback
+import time
+import os
 from typing import Optional, Type, List, Dict, Any, Callable
 from PIL import Image, ImageDraw, ImageFont
 import os
@@ -51,8 +53,8 @@ class CustomAgent(Agent):
             controller: Controller = Controller(),
             use_vision: bool = True,
             save_conversation_path: Optional[str] = None,
-            max_failures: int = 5,
-            retry_delay: int = 10,
+            max_failures: int = 15,
+            retry_delay: int = 120,
             system_prompt_class: Type[SystemPrompt] = SystemPrompt,
             agent_prompt_class: Type[AgentMessagePrompt] = AgentMessagePrompt,
             max_input_tokens: int = 128000,
@@ -193,6 +195,7 @@ class CustomAgent(Agent):
         )
 
         ai_message = self.llm.invoke(messages_to_process)
+        time.sleep(int(os.getenv('LLM_API_DELAY', 20)))  # Add rate limiting delay
         self.message_manager._add_message_with_tokens(ai_message)
 
         if self.use_deepseek_r1:
